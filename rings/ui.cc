@@ -60,7 +60,9 @@ void Ui::Init(
   part_ = part;
   string_synth_ = string_synth;
   
-  if (switches_.pressed_immediate(1)) {
+  if (switches_.pressed_immediate(0) && switches_.pressed_immediate(1)) {
+    StartCalibration();
+  } else if (switches_.pressed_immediate(1)) {
     State* state = settings_->mutable_state();
     if (state->color_blind == 1) {
       state->color_blind = 0; 
@@ -90,7 +92,14 @@ void Ui::Poll() {
   
   for (uint8_t i = 0; i < kNumSwitches; ++i) {
     if (switches_.just_pressed(i)) {
-      press_time_[i] = system_clock.milliseconds();
+      if (mode_ == UI_MODE_OPTIONS_MENU && switches_.pressed(1 - i)) {
+        SaveState();
+        IgnoreSwitchReleases();
+        queue_.Touch();
+        mode_ = UI_MODE_OPTIONS_MENU_OUTRO;
+      } else {
+        press_time_[i] = system_clock.milliseconds();
+      }
     }
     if (switches_.pressed(i) && press_time_[i] != 0) {
       int32_t pressed_time = system_clock.milliseconds() - press_time_[i];
@@ -289,22 +298,13 @@ void Ui::IgnoreSwitchReleases() {
 // TODO - maybe instead of switching to outro with long press
 // just press both buttons anywheree
 void Ui::OnSwitchLongHeld(const Event& e) {
-  // If both switches are held with a long press, either enter/exit menu
-  // or go to calibration.
+  // If both switches are held with a long press, enter/exit menu
+  // (or go to normalization calibration).
   if (switches_.pressed(1 - e.control_id)) {
-    if (mode_ == UI_MODE_OPTIONS_MENU) {
-      mode_ = UI_MODE_OPTIONS_MENU_OUTRO;
-      queue_.Touch();
-    } else if (e.control_id == 0) {
-      // Toggle back frequency locking after it was affected by going into menu
-      settings_->ToggleFrequencyLocking();
-      mode_ = UI_MODE_OPTIONS_MENU_INTRO;
+    if (mode_ == UI_MODE_CALIBRATION_C1) {
+      StartNormalizationCalibration();
     } else {
-      if (mode_ == UI_MODE_CALIBRATION_C1) {
-        StartNormalizationCalibration();
-      } else {
-        StartCalibration();
-      }
+      mode_ = UI_MODE_OPTIONS_MENU_INTRO;
     }
   } else if (e.control_id == 0) {
     part_->set_polyphony(3);

@@ -35,6 +35,8 @@
 
 namespace rings {
 
+const uint32_t kSettingsId = 414344649;
+
 struct CalibrationData {
   float pitch_offset;
   float pitch_scale;
@@ -44,6 +46,8 @@ struct CalibrationData {
 };
 
 struct State {
+  uint32_t settings_version_id;
+  float locked_transpose;
   uint8_t polyphony;
   uint8_t model;
   uint8_t easter_egg;
@@ -57,8 +61,8 @@ struct State {
 
 struct SettingsData {
   CalibrationData calibration_data; // 40 bytes
-  State state;  // 9 bytes
-  uint8_t padding[15];
+  State state;  // 13 bytes
+  uint8_t padding[11];
 };
 
 class Settings {
@@ -67,6 +71,7 @@ class Settings {
   ~Settings() { }
   
   void Init();
+  void InitState();
   void Save();
   
   inline CalibrationData* mutable_calibration_data() {
