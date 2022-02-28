@@ -59,14 +59,9 @@ void Ui::Init(
   cv_scaler_ = cv_scaler;
   part_ = part;
   string_synth_ = string_synth;
-  startup_calibration_ = false;
   
   mode_ = UI_MODE_NORMAL;
-  if (switches_.pressed_immediate(0) && switches_.pressed_immediate(1)) {
-    StartCalibration();
-    startup_calibration_ = true;
-    IgnoreSwitchReleases();
-  } else if (switches_.pressed_immediate(1)) {
+  if (switches_.pressed_immediate(1)) {
     State* state = settings_->mutable_state();
     if (state->color_blind == 1) {
       state->color_blind = 0; 
@@ -80,6 +75,7 @@ void Ui::Init(
   part_->set_model(static_cast<ResonatorModel>(settings_->state().model));
   string_synth_->set_polyphony(settings_->state().polyphony);
   string_synth_->set_fx(static_cast<FxType>(settings_->state().model));
+  mode_ = UI_MODE_NORMAL;
 }
 
 void Ui::SaveState() {
@@ -93,7 +89,6 @@ void Ui::Poll() {
   system_clock.Tick();
   switches_.Debounce();
 
-  bool startup_calibration = startup_calibration_;
   for (uint8_t i = 0; i < kNumSwitches; ++i) {
     if (switches_.just_pressed(i)) {
       if (mode_ == UI_MODE_OPTIONS_MENU && switches_.pressed(1 - i)) {
@@ -101,8 +96,6 @@ void Ui::Poll() {
         IgnoreSwitchReleases();
         queue_.Touch();
         mode_ = UI_MODE_OPTIONS_MENU_OUTRO;
-      } else if (startup_calibration) {
-        startup_calibration_ = false;
       } else {
         press_time_[i] = system_clock.milliseconds();
       }
@@ -305,12 +298,14 @@ void Ui::IgnoreSwitchReleases() {
 // just press both buttons anywheree
 void Ui::OnSwitchLongHeld(const Event& e) {
   // If both switches are held with a long press, enter/exit menu
-  // (or go to normalization calibration).
+  // or go to calibration.
   if (switches_.pressed(1 - e.control_id)) {
-    if (mode_ == UI_MODE_CALIBRATION_C1) {
+    if (e.control_id == 0) {
+      mode_ = UI_MODE_OPTIONS_MENU_INTRO;
+    } else if (mode_ == UI_MODE_CALIBRATION_C1) {
       StartNormalizationCalibration();
     } else {
-      mode_ = UI_MODE_OPTIONS_MENU_INTRO;
+      StartCalibration();
     }
   } else if (e.control_id == 0) {
     part_->set_polyphony(3);
