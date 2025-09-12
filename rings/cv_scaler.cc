@@ -216,8 +216,6 @@ void CvScaler::Read(Patch* patch, PerformanceState* performance_state, Settings*
 
   float transpose = 60.0f * adc_lp_[ADC_CHANNEL_POT_FREQUENCY];
   float octave_transpose = 12.0f * (floor(adc_lp_[ADC_CHANNEL_POT_FREQUENCY] * 6.999f) - 3.0f);
-
-  float octave_transpose = 12.0f * (floor(adc_lp_[ADC_CHANNEL_POT_FREQUENCY] * 6.999f) - 3.0f);
   float hysteresis = 0.0f;
   if (frequency_locked_ && mutable_state->frequency_locked) {
     transpose = mutable_state->locked_transpose;

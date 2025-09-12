@@ -75,7 +75,6 @@ void Settings::InitState() {
   data_.state.mode_option = 0;
   data_.state.waveform_exciter_option = 0;
   data_.state.chord_table_option = 0;
-  data_.state.strum_hold_option = 0;
 }
 
 void Settings::SwitchModeOption() {

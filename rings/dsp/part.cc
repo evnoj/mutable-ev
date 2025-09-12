@@ -361,13 +361,9 @@ void Part::RenderStringVoice(
 
   if (model_ == RESONATOR_MODEL_SYMPATHETIC_STRING ||
       model_ == RESONATOR_MODEL_SYMPATHETIC_STRING_QUANTIZED) {
-<<<<<<< HEAD
-    num_strings = 2 * kMaxPolyphony / polyphony_;
-=======
     num_strings = kNumStrings / polyphony_;
     // TODO - looks like this doesn't respect update_patch for patch.structure
     //   need to investigate further
->>>>>>> b2dcbdd (change calibration procedure to startup, update state init on fresh install)
     float parameter = model_ == RESONATOR_MODEL_SYMPATHETIC_STRING
         ? patch.structure
         : 2.0f + performance_state.chord;

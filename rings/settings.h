@@ -56,7 +56,6 @@ struct State {
   uint8_t mode_option;
   uint8_t waveform_exciter_option;
   uint8_t chord_table_option;
-  float locked_transpose;
 };
 
 struct SettingsData {
