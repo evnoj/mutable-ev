@@ -108,7 +108,6 @@ void Ui::Poll() {
       } else if (pressed_time > kMediumPressDuration &&
                  mode_ == UI_MODE_NORMAL &&
                  switches_.pressed(1 - i)) {
-        settings_->ToggleFrequencyLocking();
         mode_ = UI_MODE_DISPLAY_FREQUENCY_LOCKING;
       }
     }
@@ -347,6 +346,9 @@ void Ui::OnSwitchReleased(const Event& e) {
         option_menu_item_ = (option_menu_item_ + 1) % kNumOptions;
         break;
       case UI_MODE_DISPLAY_FREQUENCY_LOCKING:
+        if (switches_.pressed(1)) {
+          settings_->ToggleFrequencyLocking();
+        }
         IgnoreSwitchReleases();
         mode_ = UI_MODE_NORMAL;
         break;
@@ -369,6 +371,9 @@ void Ui::OnSwitchReleased(const Event& e) {
   } else {
     switch (mode_) {
       case UI_MODE_DISPLAY_FREQUENCY_LOCKING:
+        if (switches_.pressed(0)) {
+          settings_->ToggleFrequencyLocking();
+        }
         IgnoreSwitchReleases();
         mode_ = UI_MODE_NORMAL;
         break;
