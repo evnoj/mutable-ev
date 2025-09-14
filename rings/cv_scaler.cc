@@ -142,6 +142,9 @@ void CvScaler::DetectNormalization() {
   }
 
 void CvScaler::Read(Patch* patch, PerformanceState* performance_state, Settings* settings) {
+  // performance_state->mode = static_cast<PerformanceMode>(settings->ModeOption());
+  // performance_state->waveform_exciter = settings->WaveformExciterOption();
+
   // Process all CVs / pots.
   for (size_t i = 0; i < ADC_CHANNEL_LAST; ++i) {
     const ChannelSettings& settings = channel_settings_[i];

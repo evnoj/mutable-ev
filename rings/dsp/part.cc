@@ -571,17 +571,15 @@ void Part::Process(
   // Apply limiter to string output.
   limiter_.Process(out, aux, size, model_gains_[model_]);
 
-  float note = note_[active_voice_] + performance_state.tonic + performance_state.fm;
-  float frequency = SemitonesToRatio(note - 69.0f) * a3;
-  if (performance_state.mode != 0) {
-    // TODO - pass through crossfade amount somehow
-    float crossfade_amount = 0.5f;
-    // if (performance_state.mode == 2) {
-    //   crossfade_amount = cv_scaler.frequency_pot_value();
-    // }
+  if (performance_state.mode == 1) {
+    float note = note_[active_voice_] + performance_state.tonic + performance_state.fm;
+    float frequency = SemitonesToRatio(note - 69.0f) * a3;
+
+    // crossfade
     for (size_t i = 0; i < size; ++i) {
-      aux[i] = Crossfade(out[i], aux[i], crossfade_amount);
+      aux[i] = Crossfade(out[i], aux[i], 0.5f);
     }
+
     // TODO - steal some exciter options from elements
     // TODO - something is wonky with this square wave below about 3:15 on the freq knob,
     //   but it looks much wonky without noise in, also structure seems to make a difference

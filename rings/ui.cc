@@ -42,7 +42,7 @@ const int32_t kAnimationDuration = 2000;
 const int32_t kLongPressDuration = 3000;
 const int32_t kMediumPressDuration = 200;
 // TODO - add more options
-const uint8_t kNumOptions = 3;
+const uint8_t kNumOptions = 2;
 
 using namespace std;
 using namespace stmlib;
@@ -220,9 +220,6 @@ void Ui::Poll() {
         } else if (option_menu_item_ == 1) {
           leds_.set(0, 1, 0);
           option_value = settings_->WaveformExciterOption();
-        } else if (option_menu_item_ == 2) {
-          leds_.set(0, 1, 1);
-          option_value = settings_->ChordTableOption();
         }
 
         if (option_value == 0) {
@@ -385,8 +382,6 @@ void Ui::OnSwitchReleased(const Event& e) {
           settings_->SwitchModeOption();
         } else if (option_menu_item_ == 1) {
           settings_->SwitchWaveformExciterOption();
-        } else if (option_menu_item_ == 2) {
-          settings_->SwitchChordTableOption();
         }
         break;
       default:

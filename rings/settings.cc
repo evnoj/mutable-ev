@@ -32,7 +32,7 @@
 
 namespace rings {
 
-const uint8_t kNumModeOptions = 4;
+const uint8_t kNumModeOptions = 3;
 // TODO - exciter options
 const uint8_t kNumWaveformExciterOptions = 3;
 // TODO - is 3 the number of chord tables we want?
@@ -80,7 +80,7 @@ void Settings::InitState() {
 void Settings::SwitchModeOption() {
   uint8_t new_option = (ModeOption() + 1) % kNumModeOptions;
   mutable_state()->mode_option = new_option;
-  mutable_state()->easter_egg = new_option == 4;
+  mutable_state()->easter_egg = new_option == 2;
 }
 
 void Settings::SwitchWaveformExciterOption() {
