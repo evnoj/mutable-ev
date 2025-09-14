@@ -585,19 +585,19 @@ void Part::Process(
     //   but it looks much wonky without noise in, also structure seems to make a difference
     //   (wonkier below 2:00ish)
     if (performance_state.waveform_exciter == 0) {
-      oscillator_.Render<OSCILLATOR_SHAPE_SQUARE>(frequency, 0.5f, out, size);
+      oscillator_.Render<OSCILLATOR_SHAPE_SQUARE>(frequency, 0.5f, aux, size);
       for (size_t i = 0; i < size; ++i) {
-        out[i] /= 2.0f;
+        aux[i] /= 2.0f;
       }
     } else if (performance_state.waveform_exciter == 1) {
-      oscillator_.Render<OSCILLATOR_SHAPE_IMPULSE_TRAIN>(frequency, 0.5f, out, size);
+      oscillator_.Render<OSCILLATOR_SHAPE_IMPULSE_TRAIN>(frequency, 0.5f, aux, size);
       for (size_t i = 0; i < size; ++i) {
-        out[i] /= 1.5f;
+        aux[i] /= 1.5f;
       }
     } else if (performance_state.waveform_exciter == 2) {
-      oscillator_.Render<OSCILLATOR_SHAPE_SAW>(frequency, 0.5f, out, size);
+      oscillator_.Render<OSCILLATOR_SHAPE_SAW>(frequency, 0.5f, aux, size);
       for (size_t i = 0; i < size; ++i) {
-        out[i] /= 2.0f;
+        aux[i] /= 2.0f;
       }
     }
   }
