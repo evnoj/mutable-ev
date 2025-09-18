@@ -36,7 +36,16 @@ uint32_lookup_tables = []
 
 SAMPLE_RATE = 48000.0
 
-
+# give this func a scalar from 0-1
+# k is "steepness"
+# good steepness range is 0.5-2
+def scurve(x, k=1):
+  x = x - 0.5
+  x = x * 12
+  L = 1
+  x_0 = 0
+  result = L / (1 + numpy.exp(-k * (x - x_0)))
+  return result
 
 """----------------------------------------------------------------------------
 Sine table
@@ -74,24 +83,74 @@ Stiffness table.
 
 structure = numpy.arange(0, 257) / 256.0
 stiffness = structure + 0
-for i, g in enumerate(structure):
-  if g < 0.25:
-    g = 0.25 - g
-    stiffness[i] = -g * 0.25
-  elif g < 0.3:
-    stiffness[i] = 0.0
-  elif g < 0.9:
-    g -= 0.3
-    g /= 0.6
-    stiffness[i] = 0.01 * 10 ** (g * 2.005) - 0.01
-  else:
-    g -= 0.9
-    g /= 0.1
-    g *= g
-    stiffness[i] = 1.5 - numpy.cos(g * numpy.pi) / 2.0
 
-stiffness[-1] = 2.0
-stiffness[-2] = 2.0
+# .25-.3: 10-11 o clock node originally
+
+# node values experimentally derived for my module:
+# .11-.15 exclusive: 9 o' clock node
+# .28-.32 exclusive: 10 o' clock node
+# .465-.51 exclusive: 12 o' clock node
+# .66-.7 exclusive: 2 o' clock node
+# .84-.89 exclusive: 3 o' clock node
+for i, g in enumerate(structure):
+  if g < 0.11:
+    g = 0.205 - g
+    stiffness[i] = -g * 0.258
+  elif g < 0.15:
+    # 9 o' clock
+    stiffness[i] = -0.025
+  elif g < 0.28:
+    # .13x = -0.025
+    g = 0.28 - g
+    stiffness[i] = -g * 0.19
+  elif g < 0.32:
+    # 10 o' clock
+    stiffness[i] = 0.0
+  elif g < 0.465:
+    p_floor = 0.32
+    p_ceil = 0.465
+    p_range = p_ceil - p_floor
+    scale = (g-p_floor) / p_range
+    v_floor = 0
+    v_ceil = 0.125
+    v_range = v_ceil - v_floor
+    stiffness[i] = scurve(scale) * v_range + v_floor
+  elif g < 0.51:
+    # 12 o' clock
+    stiffness[i] = 0.125
+  elif g < 0.66:
+    p_floor = 0.51
+    p_ceil = 0.66
+    p_range = p_ceil - p_floor
+    scale = (g-p_floor) / p_range
+    v_floor = 0.125
+    v_ceil = 0.25
+    v_range = v_ceil - v_floor
+    stiffness[i] = scurve(scale) * v_range + v_floor
+  elif g < 0.7:
+    # 2 o' clock
+    stiffness[i] = 0.25
+  elif g < 0.84:
+    g -= 0.7
+    g /= 0.3
+    stiffness[i] = 0.25 + 0.01 * 10 ** (g * 3.005) - 0.01
+  elif g < 0.89:
+    # 3 o' clock
+    stiffness[i] = .5
+  else:
+    g -= 0.89
+    g /= 0.11
+    stiffness[i] = 0.5 + 0.01 * 10 ** (g * 1.8) - 0.01
+
+stiffness[0] = -0.05
+stiffness[1] = -0.05
+stiffness[-1] = 1.0
+stiffness[-2] = 1.0
+
+for i, g in enumerate(structure):
+  if stiffness[i] > 0:
+    stiffness[i] = stiffness[i] * 2
+
 lookup_tables += [('stiffness', stiffness)]
 
 
