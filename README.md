@@ -1,3 +1,7 @@
+Alternate firmware WAVs are in `alt_firmwares`
+
+---
+
 Mutable Instruments' Eurorack Modules.
 
 * [Blades](http://mutable-instruments.net/modules/blades): Dual multimode filter.
